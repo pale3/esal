@@ -1,0 +1,198 @@
+# -*eselect*- module bashcomp vim:set ft=sh:
+# MODULE INFO:
+MODNAME="bashcomp"
+DESCRIPTION="Manage contributed bash-completion scripts"
+MODULE_VERSION="${MODNAME} 1.0"
+MODULE_PARAMETERS="list enable disable"
+DEFAULT_ACTION="help"
+USAGE_HELP="${ES_BINARY} ${MODNAME} <action> <option>"
+
+
+find_targets() {
+	local bcdir bc
+
+	for bcdir in "/usr/share/bash-completion/*"
+	do
+		for bc in ${bcdir}/*; do
+			[[ -f ${bc} && ${bc} != *~ ]] && basename "${bc}"
+		done
+	done 
+}
+
+is_enabled() {
+	local bcdir
+
+	bcdir=${ROOT%/}/${HOME}/.bash_completion.d
+	if [[ $1 == "--global" ]]; then
+		bcdir=${EROOT%/}/etc/bash_completion.d
+		shift
+	fi
+
+	[[ -e ${bcdir}/$1 ]]
+}
+
+### list action ###
+
+describe_list() {
+	echo "List available completions"
+}
+
+do_list() {
+	local targets opts i
+	targets=( $(find_targets) )
+
+	emsg "Available completions:"
+	for (( i = 0; i < ${#targets[@]}; i++ )); do
+		is_enabled "${targets[i]}"
+		#targets[i]=$("${targets[i]}")
+		write_numbered_output -h "${targets[i]}"
+	done
+}
+
+### enable action ###
+
+describe_enable() {
+	echo "Enable specified completion(s)"
+}
+
+do_enable() {
+	local bcdir bc mode="" file target targets
+
+	bcdir=${ROOT%/}/${HOME}/.bash_completion.d
+	if [[ $1 == "--global" ]]; then
+		bcdir=${EROOT%/}/etc/bash_completion.d
+		mode="-m 0755"
+		shift
+	fi
+
+	[[ $# -eq 0 ]] && die -q "You didn't specify any completions to enable."
+
+	# create directory if necessary
+	if [[ ! -d ${bcdir} && -w $(dirname ${bcdir}) ]]; then
+		mkdir ${mode} "${bcdir}" || die -q "Failed to create ${bcdir}"
+	elif [[ ! -d ${bcdir} ]]; then
+		die -q "You don't have permission to create ${bcdir}"
+	fi
+
+	# make sure we have proper permissions
+	[[ -w ${bcdir} ]] \
+		|| die -q "You don't have permission to write to ${bcdir}"
+
+	targets=( $(find_targets) )
+
+	for bc in "$@"; do
+		# ignore any unrecognized options
+		[[ ${bc} == --* ]] && continue
+
+		target=${bc}
+		is_number "${target}" && target=${targets[target-1]}
+
+		[[ -z ${target} ]] \
+			&& die -q "Target \"${bc}\" doesn't appear to be valid!"
+
+		bc=${target}
+
+		# what form is the argument in?
+		case "${bc}" in
+			# absolute path
+			/*)
+				file=${ROOT%/}/${bc}
+				;;
+			# relative path
+			*/*)
+				file=${ROOT%/}/${PWD}/${bc}
+				;;
+			# no path
+			*)
+				# assume /usr/share/bash-completion
+				file=${EROOT%/}/usr/share/bash-completion/${bc}
+				if [[ ! -f ${file} ]]; then
+					for x in ${ES_BASHCOMP_DIRS}; do
+						[[ -f ${x}/${bc} ]] && file=${x}/${bc}
+					done
+				fi
+				;;
+		esac
+
+		# does it exist?
+		if [[ ! -f ${file} ]]; then
+			write_error_msg "${file} doesn't exist"
+			continue
+		fi
+
+		# already installed?
+		if [[ -e ${bcdir}/$(basename ${bc}) ]]; then
+			write_error_msg "$(basename ${bc}) is already installed"
+			continue
+		fi
+
+		# finally, create the symlink
+		ln -s "$(relative_name "${file}" "${bcdir}")" "${bcdir}/" \
+			|| die -q "Failed to create symlink from ${file} to ${bcdir}"
+	done
+}
+
+### disable action ###
+
+describe_disable() {
+	echo "Disable specified completion(s)"
+}
+
+do_disable() {
+	local bcdir bc targets target file
+
+	bcdir=${ROOT%/}/${HOME}/.bash_completion.d
+	if [[ $1 == "--global" ]]; then
+		bcdir=${EROOT%/}/etc/bash_completion.d
+		shift
+	fi
+
+	[[ $# -eq 0 ]] && die -q "You didn't specify any completions to disable"
+
+	targets=( $(find_targets) )
+
+	for bc in "$@"; do
+		# ignore any unrecognized options
+		[[ ${bc} == --* ]] && continue
+
+		target=${bc}
+
+		is_number "${target}" && target=${targets[target-1]}
+
+		[[ -z ${target} ]] \
+			&& die -q "Target \"${bc}\" doesn't appear to be valid!"
+
+		bc=${target}
+		file=${bcdir}/${bc}
+
+		# is it installed?
+		if [[ ! -e ${file} ]]; then
+			write_error_msg "${bc} is not installed"
+			continue
+		fi
+
+		# remove it if we have permissions
+		if [[ -w $(dirname ${file}) ]]; then
+			rm "${file}" || die -q "Failed to remove ${file}"
+		else
+			die -q "You don't have permission to remove ${file}"
+		fi
+	done
+}
+
+do_help(){
+	echo "$DESCRIPTION"
+	echo "Usage: $USAGE_HELP"
+	show_default_usage "actions"
+	emsg "Extra actions:"
+	show_module_desc
+}
+
+do_usage(){
+	echo "Usage: $USAGE_HELP"
+}
+
+do_version(){
+	echo ":: ${MODULE_VERSION}"
+}
+

@@ -1,0 +1,143 @@
+# -*eselect*- module fontconfig vim:set ft=sh:
+# MODULE INFO:
+MODNAME="vi"
+DESCRIPTION="Manage /usr/bin/vi implementations"
+MODULE_VERSION="${MODNAME} 1.0"
+MODULE_PARAMETERS="list set show"
+DEFAULT_ACTION="help"
+USAGE_HELP="${ES_BINARY} ${MODNAME} <action> <option>"
+
+# describe functions $describe_{show,list,set}
+describe_list() {
+	echo "List available vi implementations"
+}
+
+describe_set() {
+	echo "Set a new vi implementation provider"
+}
+
+describe_show() {
+	echo "Show the current vi implementation"
+}
+
+# find a list of vi symlink targets, best first
+find_targets() {
+	local f
+	for f in \
+			/usr/bin/vim \
+			/usr/bin/nvi \
+			/usr/bin/elvis \
+			/usr/bin/vile \
+			/usr/bin/gvim \
+			/usr/bin/xvile \
+		; do
+		if [[ -f "${f}" ]] ; then
+			echo $(basename "${f}" )
+		fi
+	done
+}
+
+remove_symlinks() {
+	rm -f /usr/bin/vi &>/dev/null
+}
+
+# set the vi, ex, view, and man vi symlinks
+set_symlinks() {
+	local target="${1}" targets
+	if is_number "${target}" && [[ ${target} -ge 1 ]] ; then
+		targets=( $(find_targets ) )
+		target=${targets[target-1]}
+	else
+		die -m "not a valid target"
+	fi
+
+	local dir="/usr/bin"
+
+	if [[ -f "${dir}/${target}" ]] ; then
+		remove_symlinks
+
+	# it's not okay if these fail
+	ln -s "${dir}/${target}" "/usr/bin/vi" \
+		|| die -m "Couldn't set ${target} /usr/bin/vi symlink"
+	else
+		die -m "Target \"${1}\" doesn't appear to be valid!"
+	fi
+}
+
+check_symlink(){
+	local p=${1} t=${2} sym=$( ls -la /usr/bin/vi | awk -F"-> " '{print $NF}' ) 
+	sym=$(basename $sym )
+	
+	#-c compare with target so we can get mark
+	#-o get only symlink point
+	case $p in
+		-o ) write_ad_output "$sym" ;;
+		-c ) [[ $t == $sym ]] && targets[i]="${targets[i]} ${B}*${N}" ;;
+	esac
+}
+
+# do functions $do_{show,list,set}
+do_show() {
+	[[ -z "${@:3}" ]] || die -m "Too many parameters"
+	
+	emsg "Current vi implementation:"
+	if [[ -L "/usr/bin/vi" ]] ; then
+		check_symlink -o
+	elif [[ -e "/usr/bin/vi" ]] ; then
+		msg "(not a symlink)"
+	else
+		msg "(unset)"
+	fi
+}
+
+do_list() {
+	[[ -z "${@:3}" ]] || die -m "Too many parameters"
+
+	local i targets
+	emsg "Available vi implementations:"
+	targets=( $(find_targets ) )
+	for (( i = 0; i < ${#targets[@]}; i++ )); do
+			# get current vi implementation, if /usr/bin/vi
+			[[ -e /usr/bin/vi ]] && check_symlink -c "${targets[i]}"
+			write_numbered_output -s "${targets[i]}"
+	done
+}
+
+do_set() {
+	local p="${@:3}"	
+	[[ $# -gt 3 ]] && die -m "Too many param"
+
+  if [[ -z "${p}" ]] ; then
+		die -m "You didn't give me a provider name"
+
+	elif [[ -L "/usr/bin/vi" ]] ; then
+		if ! remove_symlinks ; then
+			die -m "Can't remove existing provider, are you using root?"
+		elif ! set_symlinks "${p}" ; then
+			die -m "Can't set new provider"
+		fi
+
+	elif [[ -e "/usr/bin/vi" ]] ; then
+		die -m "Sorry, /usr/bin/vi confuses me"
+
+	else
+		set_symlinks "${p}" || die -m "Can't set a new provider, Are you using root?"
+	fi
+}
+
+do_help(){
+	msg "$DESCRIPTION"
+	msg "Usage: $USAGE_HELP"
+	show_default_usage "actions"
+	emsg "Extra actions:"
+	show_module_desc
+	
+}
+
+do_usage(){
+	echo "Usage: ${USAGE_HELP}"
+}
+
+do_version(){
+	echo ":: ${MODULE_VERSION}"
+}

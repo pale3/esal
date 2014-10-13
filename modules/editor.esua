@@ -1,0 +1,19 @@
+# -*eselect*- module editor vim:set ft=sh:
+# MODULE INFO:
+MODNAME="editor"
+DESCRIPTION="Manage the EDITOR environment variable"
+MODULE_VERSION="${MODNAME} 1.0"
+MODULE_PARAMETERS="show list set"
+ENV_VAR="EDITOR"
+LIST="/usr/bin/nano
+		/usr/bin/ed
+		/usr/bin/ex
+		/usr/bin/emacs
+		/usr/bin/vim
+		/usr/bin/xemacs"
+DEFAULT_ACTION="help"
+USAGE_HELP="${ES_BINARY} ${MODNAME} <action> <option>"
+
+# inherit "editor-manip" for simplicity and no code duplication 
+# as modules(editor,pager,visual) shares same functions
+inherit editor-manip

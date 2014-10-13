@@ -1,0 +1,11 @@
+# avaliable modules
+
+#ignore module with !
+
+modules=( !bashcomp editor pager visual fontconfig )
+
+color=on/off
+
+default_arg=""
+
+

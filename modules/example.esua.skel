@@ -1,0 +1,26 @@
+# -*-eselect-*- module pager vim:set ft=sh:
+# THIS IS SKELETON FILE FOR *.eselect module creation
+
+# Optional variable
+MODNAME=""
+
+# Optional variable
+VAR=""
+
+# required variable
+DESCRIPTION=""
+
+#required variable
+USAGE_HELP=""
+
+# required variable
+MODULE_PARAMETERS=""
+
+# here are supported fucntions, none of these wouldn't be
+# executed if there is no definition parameter inside MODULE_PARAMETERS
+do_help(){}
+do_set(){}
+do_list(){}
+do_show(){}
+
+# every fucntion is sourced and executed if modulename is valid on cmd line

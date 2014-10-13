@@ -1,0 +1,102 @@
+#! /bin/bash
+
+# set some var
+ES_DATA_PATH="/home/marko/Documents/projects/bash/esua"
+ES_MODULES_PATH="${ES_DATA_PATH}/modules"
+ES_CORE_PATH="${ES_DATA_PATH}/lib"
+ES_DEFAULT_ACTIONS="${ES_CORE_PATH}/default.esua"
+ES_BINARY="esua"
+ES_ENVCONF="/etc/env.conf"
+
+# unset some bash internal
+unset CDPATH GLOBIGNORE
+
+# give us ability for trap execution
+trap 'echo "exiting" >&2; exit 250' 15
+
+# these are default fucntion which parse ones find in modules
+# every module founded in ES_MODULE_PATH has his specific 
+# do_list, do_set, do_help, do_usage, do_enable, do_disable functions
+es_do_list(){
+	do_list "$@"
+}
+es_do_set(){
+	do_set "$@"
+}
+es_do_enable(){
+	do_enable "$@"
+}
+es_do_disable(){
+	do_disable "$@"
+}
+es_do_help(){
+	do_help
+}
+es_do_usage(){
+	do_usage
+}
+es_do_show(){
+	do_show
+}
+es_do_version(){
+	do_version
+}
+es_do_configure(){
+	inherit config
+	create_envconf "${ES_ENVCONF}"
+}
+
+# Load core functions
+source "${ES_CORE_PATH}/core.bash" || exit 255
+
+# Load necessary functions for the main script
+inherit colours default output
+
+es_load_module(){
+	local modname=${1} modpath="${ES_MODULES_PATH}"
+
+ [[ -f "${modpath}/${modname}.esua" ]] &&  
+		source $modpath/$modname.esua \
+		|| die -m "No such module \"$modname"\"
+}
+
+# MAIN process start here
+for i in ${@##--}; do
+	[[ "$i" =~ ^[a-z0-9] ]] && modname+=("$i") && \
+													   action=("${modname[@]:1}")
+done
+
+
+if [[ $# -gt 0 ]]; then
+	
+	 case ${modname} in
+	   help | usage | version | configure ) 
+	  	 [[ $# -eq 1 ]] && es_do_${modname} && exit 1 \
+	  	 || die -m "Too many parameters" ;;
+	   * ) es_load_module "$modname" ;;
+	 esac
+	
+	 # every module consist of module parameters which can accept
+	 # standard parameters like (help,usage,version) are not needed as they 
+	 # are standard
+	 for i in "${MODULE_PARAMETERS}"; do
+		 [[ $i == $action ]] && action="$i"
+	 done
+
+	# main process is here	 
+	if ! [[ -n $action  ]]; then
+		es_do_${DEFAULT_ACTION}
+	else	
+		if is_function es_do_${action}; then
+			es_do_${action} "$@"
+		else
+			die -m "No such action \"$action\""
+			#es_do_${DEFAULT_ACTION}
+		fi
+	fi	
+	
+else
+	# ececute this if there us no argugument at all
+	es_do_help
+fi
+
