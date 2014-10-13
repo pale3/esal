@@ -1,11 +1,12 @@
 #! /bin/bash
 
 # set some var
-ES_DATA_PATH="/home/marko/Documents/projects/bash/esua"
+#ES_DATA_PATH="/home/marko/Documents/projects/bash/esal"
+ES_DATA_PATH="/usr/lib/esal"
 ES_MODULES_PATH="${ES_DATA_PATH}/modules"
 ES_CORE_PATH="${ES_DATA_PATH}/lib"
-ES_DEFAULT_ACTIONS="${ES_CORE_PATH}/default.esua"
-ES_BINARY="esua"
+ES_DEFAULT_ACTIONS="${ES_CORE_PATH}/default.esal"
+ES_BINARY="esal"
 ES_ENVCONF="/etc/env.conf"
 
 # unset some bash internal
@@ -14,7 +15,6 @@ unset CDPATH GLOBIGNORE
 # give us ability for trap execution
 trap 'echo "exiting" >&2; exit 250' 15
 
-# these are default fucntion which parse ones find in modules
 # every module founded in ES_MODULE_PATH has his specific 
 # do_list, do_set, do_help, do_usage, do_enable, do_disable functions
 es_do_list(){
@@ -55,8 +55,8 @@ inherit colours default output
 es_load_module(){
 	local modname=${1} modpath="${ES_MODULES_PATH}"
 
- [[ -f "${modpath}/${modname}.esua" ]] &&  
-		source $modpath/$modname.esua \
+ [[ -f "${modpath}/${modname}.esal" ]] &&  
+		source $modpath/$modname.esal \
 		|| die -m "No such module \"$modname"\"
 }
 

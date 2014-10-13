@@ -48,7 +48,7 @@ show_module_desc(){
 	fi
 
 	emsg "Extra modules:"
-	for modules in ${ES_MODULES_PATH}/*.esua; do
+	for modules in ${ES_MODULES_PATH}/*.esal; do
 		desc=$( grep "DESCRIPTION=" $modules | sed "s/\"//g" | sed "s/DESCRIPTION=//" )
 		modname=$( basename ${modules/%.*} )
 	
