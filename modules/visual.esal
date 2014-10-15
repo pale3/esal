@@ -1,4 +1,4 @@
-# -*eselect*- module visual vim:set ft=sh:
+# -*esal*- module visual vim:set ft=sh:
 # MODULE INFO:
 MODNAME="visual"
 DESCRIPTION="Manage the VISUAL environment variable"

@@ -16,7 +16,7 @@ is_function() {
 }
 
 # inherit module PUBLIC
-# Sources a given eselect library file
+# Sources a given esal library file
 inherit() {
 	local x
 	for x in "$@"; do

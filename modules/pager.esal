@@ -1,4 +1,4 @@
-# -*-eselect-*- module pager vim:set ft=sh:
+# -*-esal-*- module pager vim:set ft=sh:
 # MODULE INFO:
 MODNAME="pager"
 DESCRIPTION="Manage the PAGER environment variable"

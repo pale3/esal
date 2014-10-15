@@ -1,5 +1,5 @@
-# -*-eselect-*- module pager vim:set ft=sh:
-# THIS IS SKELETON FILE FOR *.eselect module creation
+# -*-esal-*- module pager vim:set ft=sh:
+# THIS IS SKELETON FILE FOR *.esal module creation
 
 # Optional variable
 MODNAME=""

@@ -1,4 +1,4 @@
-# -*eselect*- module bashcomp vim:set ft=sh:
+# -*esal*- module bashcomp vim:set ft=sh:
 # MODULE INFO:
 MODNAME="bashcomp"
 DESCRIPTION="Manage contributed bash-completion scripts"

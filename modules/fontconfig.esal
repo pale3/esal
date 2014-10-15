@@ -1,4 +1,4 @@
-# -*eselect*- module fontconfig vim:set ft=sh:
+# -*esal*- module fontconfig vim:set ft=sh:
 # MODULE INFO:
 MODNAME="fontconfig"
 DESCRIPTION="Manage fontconfig /etc/fonts/conf.d symlinks"

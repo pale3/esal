@@ -1,4 +1,4 @@
-# -*eselect*- module fontconfig vim:set ft=sh:
+# -*esal*- module fontconfig vim:set ft=sh:
 # MODULE INFO:
 MODNAME="vi"
 DESCRIPTION="Manage /usr/bin/vi implementations"
