@@ -2,9 +2,9 @@ create_envconf(){
 	local config=${1} profdesc envdesc chk
 
 	profdesc="
-# DO NOT REMOVE THIS LINE IT'S ESSENTIAL FOR ESELECT 
+# DO NOT REMOVE THIS LINE IT'S ESSENTIAL FOR ESAL UTILITY
 source $config "
-	envdesc="# DO NOT ALTER THIS LINES DIRECTLY, IT'S INTENDED TO BE USED WITH ESELECT UTILITY"
+	envdesc="# DO NOT ALTER THIS LINES DIRECTLY, IT'S INTENDED TO BE USED WITH ESAL UTILITY"
 	
 	emsg "Configuring $ES_BINARY utility:"
 	if ! [[ -f $config ]]; then
@@ -27,6 +27,8 @@ source $config "
 	return
 
 }
+
+# Pseudo function its not ment to be called directly 
 read_env_value(){
 	local location="/etc/env.conf" 
 	cur=

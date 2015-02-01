@@ -45,7 +45,7 @@ do_list(){
 	targets=( $(find_targets) )
 		emsg "Avaliable fontconfig .conf file(s) (enabled is ${B}*${N}${G}):${N}"
 	
-	for (( s=0; n < ${#targets[@]}; ++s )); do
+	for (( s=0; s < ${#targets[@]}; ++s )); do
 	is_enabled ${targets[s]} && targets[s]="${targets[s]} ${B}*${N} "
 			write_numbered_output -h "${targets[s]}" 
 	

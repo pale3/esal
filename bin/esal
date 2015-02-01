@@ -1,8 +1,8 @@
 #! /bin/bash
 
 # set some var
-#ES_DATA_PATH="/home/marko/Documents/projects/bash/esal"
-ES_DATA_PATH="/usr/lib/esal"
+ES_DATA_PATH="/home/marko/Documents/projects/bash/esal"
+#ES_DATA_PATH="/usr/lib/esal"
 ES_MODULES_PATH="${ES_DATA_PATH}/modules"
 ES_CORE_PATH="${ES_DATA_PATH}/lib"
 ES_DEFAULT_ACTIONS="${ES_CORE_PATH}/default.esal"
@@ -15,8 +15,10 @@ unset CDPATH GLOBIGNORE
 # give us ability for trap execution
 trap 'echo "exiting" >&2; exit 250' 15
 
-# every module founded in ES_MODULE_PATH has his specific 
-# do_list, do_set, do_help, do_usage, do_enable, do_disable functions
+# every module founded in ES_MODULE_PATH has main functions like
+# do_list, do_set, do_help, do_usage, do_enable, do_disable. 
+# it is possible to have some sort of arbitrary functions in modules (this is bash)
+# needed for module operation
 es_do_list(){
 	do_list "$@"
 }
@@ -83,7 +85,7 @@ if [[ $# -gt 0 ]]; then
 		 [[ $i == $action ]] && action="$i"
 	 done
 
-	# main process is here	 
+	# modules calling
 	if ! [[ -n $action  ]]; then
 		es_do_${DEFAULT_ACTION}
 	else	
