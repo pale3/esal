@@ -3,7 +3,7 @@
 # set some var
 ES_DATA_PATH="/usr/lib/esal"
 ES_MODULES_PATH="${ES_DATA_PATH}/modules"
-ES_CORE_PATH="${ES_DATA_PATH}/lib"
+ES_CORE_PATH="${ES_DATA_PATH}"
 ES_DEFAULT_ACTIONS="${ES_CORE_PATH}/default.esal"
 ES_BINARY="esal"
 ES_ENVCONF="/etc/env.conf"
