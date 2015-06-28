@@ -124,4 +124,16 @@ do_show() {
 	write_ad_output "$default"
 }
 
+do_set() {
+  if ! is_java_valid $1; then
+    emsg "'${JVM_DIR}/$1' is not a valid Java environment path"
+    exit 1
+  fi
+  default=$(get_default_java)
+  if [ "x$1" != "x${default}" ] || ! is_java_valid ${default}; then
+    unset_default_link
+    set_default_link_to $1
+  fi
+
+}
 # every fucntion is sourced and executed if modulename is valid on cmd line
