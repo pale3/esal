@@ -99,7 +99,7 @@ do_list() {
 	for (( i = 0; i < ${#targets[@]}; i++ )); do
 			# get current vi implementation, if /usr/bin/vi
 			[[ -e /usr/bin/vi ]] && check_symlink -c "${targets[i]}"
-			write_numbered_output -s "${targets[i]}"
+			write_numbered_output -s "${targets[i]}" "$i"
 	done
 }
 

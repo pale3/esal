@@ -43,9 +43,8 @@ do_list() {
 
 	emsg "Available completions:"
 	for (( i = 0; i < ${#targets[@]}; i++ )); do
-		is_enabled "${targets[i]}"
-		#targets[i]=$("${targets[i]}")
-		write_numbered_output -h "${targets[i]}"
+        is_enabled "${targets[i]}"
+		write_numbered_output -h "${targets[i]}" "$i"
 	done
 }
 

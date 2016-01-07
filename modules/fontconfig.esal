@@ -47,7 +47,7 @@ do_list(){
 	
 	for (( s=0; s < ${#targets[@]}; ++s )); do
 	is_enabled ${targets[s]} && targets[s]="${targets[s]} ${B}*${N} "
-			write_numbered_output -h "${targets[s]}" 
+			write_numbered_output -h "${targets[s]}" "$s"
 	
 	done
 
