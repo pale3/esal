@@ -33,18 +33,22 @@ write_ad_output(){
 # optional: 2nd arg of <action> is used for marking [*]
 #	write_numbered_output <param> <action>
 write_numbered_output(){
-	local p=${1} action=${2} 
-	local n=$(( ${n} + 1 ))
-	
-	# small list (if output < 10 )
+	local p=${1} action=${2} count=${3}
+
+    # small list (if output < 10 )
 	if [[ $p == "-s" ]]; then
 			printf "%s\n" " ${W}[${n}]${N} ${action} ${m}"
 	fi
 
 	# huge list (if output > 10 ) {pretty alignement}
 	if [[ $p == "-h" ]]; then
-	[[ $n -lt 10 ]] && printf "%s\n" " ${W}[${n}]${N}   ${action} ${m}" ||
-                     printf "%s\n" " ${W}[${n}]${N}  ${action} ${m}" 
+         
+        [[ $count -lt 10 ]] && \
+                printf "%s\n" " ${W}[${count}]${N}   ${action} ${m}" && return 
+        [[ $count -lt 100 ]] && \
+                printf "%s\n" " ${W}[${count}]${N}  ${action} ${m}" && return
+        [[ $count -gt 100 ]] && \
+                printf "%s\n" " ${W}[${count}]${N} ${action} ${m}" && return
 	fi
 	return 0
 }
