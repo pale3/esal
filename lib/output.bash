@@ -37,7 +37,7 @@ write_numbered_output(){
 
     # small list (if output < 10 )
 	if [[ $p == "-s" ]]; then
-			printf "%s\n" " ${W}[${n}]${N} ${action} ${m}"
+			printf "%s\n" " ${W}[${counter}]${N} ${action} ${m}"
 	fi
 
 	# huge list (if output > 10 ) {pretty alignement}
