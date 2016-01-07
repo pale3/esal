@@ -28,16 +28,16 @@ write_ad_output(){
 # Used for displaying numbered output, usefull for <list> action
 # Usage: 
 #	 param: -s (small list < 10)
-#					-h (huge list > 10)
+#			-h (huge list > 10)
 # 
 # optional: 2nd arg of <action> is used for marking [*]
 #	write_numbered_output <param> <action>
 write_numbered_output(){
-	local p=${1} action=${2} count=${3}
+    local p=${1} action=${2} count=$(( $3 + 1 ))
 
     # small list (if output < 10 )
 	if [[ $p == "-s" ]]; then
-			printf "%s\n" " ${W}[${counter}]${N} ${action} ${m}"
+			printf "%s\n" " ${W}[${count}]${N} ${action} ${m}"
 	fi
 
 	# huge list (if output > 10 ) {pretty alignement}
