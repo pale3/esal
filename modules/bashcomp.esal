@@ -64,18 +64,18 @@ do_enable() {
 		shift
 	fi
 
-	[[ $# -eq 0 ]] && die -q "You didn't specify any completions to enable."
+	[[ $# -eq 0 ]] && die -m "You didn't specify any completions to enable."
 
 	# create directory if necessary
 	if [[ ! -d ${bcdir} && -w $(dirname ${bcdir}) ]]; then
-		mkdir ${mode} "${bcdir}" || die -q "Failed to create ${bcdir}"
+		mkdir ${mode} "${bcdir}" || die -m "Failed to create ${bcdir}"
 	elif [[ ! -d ${bcdir} ]]; then
-		die -q "You don't have permission to create ${bcdir}"
+		die -m "You don't have permission to create ${bcdir}"
 	fi
 
 	# make sure we have proper permissions
 	[[ -w ${bcdir} ]] \
-		|| die -q "You don't have permission to write to ${bcdir}"
+		|| die -m "You don't have permission to write to ${bcdir}"
 
 	targets=( $(find_targets) )
 
@@ -87,7 +87,7 @@ do_enable() {
 		is_number "${target}" && target=${targets[target-1]}
 
 		[[ -z ${target} ]] \
-			&& die -q "Target \"${bc}\" doesn't appear to be valid!"
+			&& die -m "Target \"${bc}\" doesn't appear to be valid!"
 
 		bc=${target}
 
@@ -115,19 +115,19 @@ do_enable() {
 
 		# does it exist?
 		if [[ ! -f ${file} ]]; then
-			write_error_msg "${file} doesn't exist"
+			die -m "${file} doesn't exist"
 			continue
 		fi
 
 		# already installed?
 		if [[ -e ${bcdir}/$(basename ${bc}) ]]; then
-			write_error_msg "$(basename ${bc}) is already installed"
+			die -m "$(basename ${bc}) is already installed"
 			continue
 		fi
 
 		# finally, create the symlink
 		ln -s "$(relative_name "${file}" "${bcdir}")" "${bcdir}/" \
-			|| die -q "Failed to create symlink from ${file} to ${bcdir}"
+			|| die -m "Failed to create symlink from ${file} to ${bcdir}"
 	done
 }
 
@@ -146,7 +146,7 @@ do_disable() {
 		shift
 	fi
 
-	[[ $# -eq 0 ]] && die -q "You didn't specify any completions to disable"
+	[[ $# -eq 0 ]] && die -m "You didn't specify any completions to disable"
 
 	targets=( $(find_targets) )
 
@@ -159,22 +159,22 @@ do_disable() {
 		is_number "${target}" && target=${targets[target-1]}
 
 		[[ -z ${target} ]] \
-			&& die -q "Target \"${bc}\" doesn't appear to be valid!"
+			&& die -m "Target \"${bc}\" doesn't appear to be valid!"
 
 		bc=${target}
 		file=${bcdir}/${bc}
 
 		# is it installed?
 		if [[ ! -e ${file} ]]; then
-			write_error_msg "${bc} is not installed"
+			die -m "${bc} is not installed"
 			continue
 		fi
 
 		# remove it if we have permissions
 		if [[ -w $(dirname ${file}) ]]; then
-			rm "${file}" || die -q "Failed to remove ${file}"
+			rm "${file}" || die -m "Failed to remove ${file}"
 		else
-			die -q "You don't have permission to remove ${file}"
+			die -m "You don't have permission to remove ${file}"
 		fi
 	done
 }
