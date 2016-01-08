@@ -1,22 +1,28 @@
-# die [-q] "Message" PUBLIC
+# Name: die [Public Function]
+# Description: Write message/no-message to stdout and exit
+# Args: 
+#   -m = with message
+#   -q = quite (no message)
+# Example: die -m "This is error message"
 die(){
 	local m="" q=""
-	# m = with message
-	# q = quite(no message)
 	
 	[[ ${1} == "-m" ]] && echo "${R}!!! ERR:${N}${@/${1}}" && exit 254
 	[[ ${1} == "-q" ]] && exit 255;
-	return 0
+	
+    return 0
 }
 
-# is_function function PUBLIC
-# Test whether function exists
+# Name: is_function [Public Function]
+# Description: Test whether if arg ${1} is function
+# Example; is_function is_number
 is_function() {
 	[[ $(type -t "${1}" ) == "function" ]]
 }
 
-# inherit module PUBLIC
-# Sources a given esal library file
+# Name: inherit [Public Function]
+# Description: Source given library passed as ${1} arg
+# Example: inherit colours
 inherit() {
 	local x
 	for x in "$@"; do
@@ -27,7 +33,9 @@ inherit() {
 	done
 }
 
-# Returns true if and only if $1 is a positive whole number
+# Name: is_number [Public Function]
+# Description: Returns true if and only if ${1} arg is number
+# Example: is_number 1234
 is_number() {
 	[[ -n ${1} ]] && [[ -z ${1//[[:digit:]]} ]]
 }
