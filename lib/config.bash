@@ -1,15 +1,14 @@
 create_envconf(){
 	local config=${1} profdesc envdesc chk
 
-	profdesc="
-# DO NOT REMOVE THIS LINE IT'S ESSENTIAL FOR ESAL UTILITY
-source $config "
-	envdesc="# DO NOT ALTER THIS LINES DIRECTLY, IT'S INTENDED TO BE USED WITH ESAL UTILITY"
+    profdesc="# DO NOT REMOVE THIS LINE ITS ESSENTIAL FOR ${ES_BINARY} UTILITY"
+    envdesc="# DO NOT ALTER THIS LINES DIRECTLY, IT'S INTENDED TO BE USED WITH ${ES_BINARY} UTILITY"
 	
-	emsg "Configuring $ES_BINARY utility:"
+	emsg "Configuring ${ES_BINARY} utility:"
 	if ! [[ -f $config ]]; then
 		msg ":: Creating $config..."
-		touch $config 2> /dev/null || die -m "root permission required!"
+		touch $config 2> /dev/null || \
+            die -m "root permission required!"
 		echo "$envdesc" >> $config 
 	else
 		msg "${Y}*${N} file $config exist, remove it manualy!"
@@ -18,14 +17,14 @@ source $config "
 	chk=$(grep "source $config" /etc/profile)
 	if [[ -z $chk ]];then
 		msg ":: Incorporating into /etc/profile..."
-		echo "$profdesc" >> /etc/profile || die -m "root permission required!"
+		echo -e "\n$profdesc\nsource $config" 2>/dev/null >> /etc/profile || \
+            die -m "root permission required!"
 		msg ":: Done"
 	else
-		msg "${Y}*${N} /etc/profile previously modified!"
+		msg "${Y}*${N} /etc/profile previously modified! Already configured?"
 	fi
 
 	return
-
 }
 
 # Pseudo function its not ment to be called directly 
@@ -50,5 +49,4 @@ write_env_value(){
 		# if cur ENV_VAR exist in env.conf then replace just value of var
 		[[ -z $cur ]] && echo "export ${value}" >> "$location" || \
 		$(sed -i "s|${ENV_VAR}=.*|${value}|" $location) 
-		
 }
