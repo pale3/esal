@@ -1,17 +1,17 @@
 # Output stuff
 
-# Used for displaying normal message type, color normal
+# Output normal message type, color normal
 # usage: msg "$1"
 msg(){ printf "%s\n" " $@"; } 
 
-# Used for diplaying title of action in green
+# Output title of action in green colour
 # Usage: emsg $1 $2
 emsg(){
 	local text=${1} target=${2}
 	printf "%s\n" " ${G}${text} ${target}${N}"; 
 } 
 
-# aligning output of strings, 
+# Aligning output of strings. 
 output_align(){
 	local action="${#1}" space=10 lcolumn=15
 	indent=$( expr $lcolumn - $action + $space )
@@ -26,9 +26,9 @@ write_ad_output(){
 }
 
 # Used for displaying numbered output, usefull for <list> action
-# Usage: 
-#	 param: -s (small list < 10)
-#			-h (huge list > 10)
+# Args: 
+#   -s (small list < 10)
+#	-h (huge list > 10)
 # 
 # optional: 2nd arg of <action> is used for marking [*]
 #	write_numbered_output <param> <action>
@@ -37,7 +37,9 @@ write_numbered_output(){
 
     # small list (if output < 10 )
 	if [[ $p == "-s" ]]; then
-			printf "%s\n" " ${W}[${count}]${N} ${action} ${m}"
+            [[  $count -lt 10 ]] && \
+			printf "%s\n" " ${W}[${count}]${N} ${action} ${m}" || \
+            die -m "write_numbered_output: please use -h arg cos this list haves more than 10 entries"
 	fi
 
 	# huge list (if output > 10 ) {pretty alignement}
@@ -65,5 +67,5 @@ is_marked(){
 	#echo $targets
 	[[ ${targets} == ${!ENV_VAR} ]] && m="${B}*${N}" || m=""
 	#[[ read_env_value == ${targets} ]] && m="${B}*${N}" || m=""
-
+    
 }
