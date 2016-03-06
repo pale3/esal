@@ -7,7 +7,6 @@ MODULE_PARAMETERS="list enable disable"
 DEFAULT_ACTION="help"
 USAGE_HELP="${ES_BINARY} ${MODNAME} <action> <option>"
 
-
 find_targets() {
 	local bcdir bc
 
@@ -21,7 +20,7 @@ find_targets() {
 
 is_enabled() {
 	local bcdir
-
+  
 	bcdir=${ROOT%/}/${HOME}/.bash_completion.d
 	if [[ $1 == "--global" ]]; then
 		bcdir=${EROOT%/}/etc/bash_completion.d
@@ -31,10 +30,16 @@ is_enabled() {
 	[[ -e ${bcdir}/$1 ]]
 }
 
-### list action ###
-
 describe_list() {
 	echo "List available completions"
+}
+
+describe_enable() {
+	echo "Enable specified completion(s)"
+}
+
+describe_disable() {
+	echo "Disable specified completion(s)"
 }
 
 do_list() {
@@ -46,12 +51,6 @@ do_list() {
         is_enabled "${targets[i]}"
 		write_numbered_output -h "${targets[i]}" "$i"
 	done
-}
-
-### enable action ###
-
-describe_enable() {
-	echo "Enable specified completion(s)"
 }
 
 do_enable() {
@@ -133,9 +132,6 @@ do_enable() {
 
 ### disable action ###
 
-describe_disable() {
-	echo "Disable specified completion(s)"
-}
 
 do_disable() {
 	local bcdir bc targets target file
@@ -194,4 +190,3 @@ do_usage(){
 do_version(){
 	echo ":: ${MODULE_VERSION}"
 }
-

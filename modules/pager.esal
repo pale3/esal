@@ -6,8 +6,8 @@ MODULE_VERSION="${MODNAME} 1.0"
 MODULE_PARAMETERS="show list set"
 ENV_VAR="PAGER"
 LIST="/usr/bin/more 
-			/usr/bin/less 
-			/usr/bin/most"
+	  /usr/bin/less 
+	  /usr/bin/most"
 DEFAULT_ACTION="help"
 USAGE_HELP="${MODNAME} <action> <options>"
 

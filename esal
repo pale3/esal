@@ -19,7 +19,7 @@ trap 'echo "exiting" >&2; exit 250' 15
 # it is possible to have some sort of arbitrary functions in modules (this is bash)
 # needed for module operation
 es_do_list(){
-	do_list "$@"
+	do_list "${@:3}"
 }
 es_do_set(){
 	do_set "$@"
@@ -51,12 +51,12 @@ es_do_configure(){
 source "${ES_CORE_PATH}/core.bash" || exit 255
 
 # Load necessary functions for the main script
-inherit colours default output
+inherit colors default output
 
 es_load_module(){
 	local modname=${1} modpath="${ES_MODULES_PATH}"
 
- [[ -f "${modpath}/${modname}.esal" ]] &&  
+ [[ -f "${modpath}/${modname}.esal" ]] && \
 		source $modpath/$modname.esal \
 		|| die -m "No such module \"$modname"\"
 }
@@ -64,12 +64,10 @@ es_load_module(){
 # MAIN process start here
 for i in ${@##--}; do
 	[[ "$i" =~ ^[a-z0-9] ]] && modname+=("$i") && \
-													   action=("${modname[@]:1}")
+      action=("${modname[@]:1}")
 done
 
-
 if [[ $# -gt 0 ]]; then
-	
 	 case ${modname} in
 	   help | usage | version | configure ) 
 	  	 [[ $# -eq 1 ]] && es_do_${modname} && exit 1 \
@@ -80,10 +78,10 @@ if [[ $# -gt 0 ]]; then
 	 # every module consist of module parameters which can accept
 	 # standard parameters like (help,usage,version) are not needed as they 
 	 # are standard
-	 for i in "${MODULE_PARAMETERS}"; do
-		 [[ $i == $action ]] && action="$i"
-	 done
-
+	for i in "${MODULE_PARAMETERS}"; do
+		[[ $i == $action ]] && action="$i" 
+	done
+     
 	# modules calling
 	if ! [[ -n $action  ]]; then
 		es_do_${DEFAULT_ACTION}
@@ -100,4 +98,3 @@ else
 	# ececute this if there us no argugument at all
 	es_do_help
 fi
-
