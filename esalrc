@@ -1,11 +1,6 @@
-# avaliable modules
+# file: esalrc
 
-#ignore module with !
-
-modules=( !bashcomp editor pager visual fontconfig )
-
-color=on/off
-
-default_arg=""
-
-
+# brief:
+# Blacklist not interested modules, multiple modules are separated by pipe |
+# E.g
+# MODULE_BLACKLIST="bashcomp|java|editor"

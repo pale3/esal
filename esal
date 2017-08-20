@@ -80,9 +80,15 @@ for i in ${@##--}; do
 done
 
 # don't allow blacklisted modules from /etc/esalrc
-while read -r mod; do
-	ES_MODULES_AVAILABLE+=( $(basename "${mod/%.*}") )
-done < <(ls -1 ${ES_MODULES_PATH}/*.esal | grep -Ev ${blacklist})
+if ! [[ -z $MODULE_BLACKLIST ]]; then
+	while read -r mod; do
+		ES_MODULES_AVAILABLE+=( $(basename "${mod/%.*}") )
+	done < <(ls -1 ${ES_MODULES_PATH}/*.esal | grep -Ev ${MODULE_BLACKLIST})
+else
+	while read -r mod; do
+		ES_MODULES_AVAILABLE+=( $(basename "${mod/%.*}") )
+	done < <(ls -1 $(ls -1 $ES_MODULES_PATH/*.esal))
+fi
 
 if [[ $# -gt 0 ]]; then
 	 case ${modname} in

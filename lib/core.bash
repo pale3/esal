@@ -62,4 +62,3 @@ require_tool(){
 	! ( $(type $t &> /dev/null) ) && die -m "Missing '$t', please install it"
 	return 0
 }
-
