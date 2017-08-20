@@ -25,6 +25,12 @@ es_do_list(){
 es_do_set(){
 	do_set "$@"
 }
+es_do_read(){
+	do_read "${@:3}"
+}
+es_do_fetch(){
+	do_fetch"${@:3}"
+}
 es_do_enable(){
 	do_enable "$@"
 }

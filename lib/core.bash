@@ -56,3 +56,10 @@ relative_name() {
 	done
 	echo "${path:-.}"
 }
+
+require_tool(){
+	local t="$1"
+	! ( $(type $t &> /dev/null) ) && die -m "Missing '$t', please install it"
+	return 0
+}
+
