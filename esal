@@ -69,7 +69,7 @@ done
 
 if [[ $# -gt 0 ]]; then
 	 case ${modname} in
-	   help | usage | version | configure ) 
+	   help | usage | version | configure )
 	  	 [[ $# -eq 1 ]] && es_do_${modname} && exit 1 \
 	  	 || die -m "Too many parameters" ;;
 	   * ) es_load_module "$modname" ;;

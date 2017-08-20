@@ -24,11 +24,11 @@ find_targets(){
 	local targets bc i=0
 	bcdirs[i]="/etc/fonts/conf.avail/*.conf"
 
-	for bc in ${bcdirs[@]} ; do
+	for bc in ${bcdirs[@]}; do
 		[[ -e ${bc} && ${bc} != *~ ]] && targets="${targets}\n$(basename ${bc})"
 	done
 
-	echo -ne ${targets} | sort -u 
+	echo -ne ${targets} | sort -u
 
 }
 
