@@ -48,12 +48,11 @@ show_module_desc(){
 	fi
 
 	emsg "Extra modules:"
-	for modules in ${ES_MODULES_PATH}/*.esal; do
-		desc=$( grep "DESCRIPTION=" $modules | sed "s/\"//g" | sed "s/DESCRIPTION=//" )
-		modname=$( basename ${modules/%.*} )
+	for module in "${ES_MODULES_AVAILABLE[@]}"; do
+		desc=$( grep "DESCRIPTION=" $ES_MODULES_PATH/${module}.esal | sed "s/\"//g" | sed "s/DESCRIPTION=//" )
 
-		output_align "${modname}"
-		write_ad_output "${modname}" "${desc:-no description}"
+		output_align "${module}"
+		write_ad_output "${module}" "${desc:-no description}"
 	done
 
 }

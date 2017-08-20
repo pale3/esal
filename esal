@@ -7,6 +7,7 @@ ES_CORE_PATH="${ES_DATA_PATH}"
 ES_DEFAULT_ACTIONS="${ES_CORE_PATH}/default.esal"
 ES_BINARY="esal"
 ES_ENVCONF="/etc/env.conf"
+ES_ESALRC="/etc/esalrc"
 
 # unset some bash internal
 unset CDPATH GLOBIGNORE
@@ -15,7 +16,7 @@ unset CDPATH GLOBIGNORE
 trap 'echo "exiting" >&2; exit 250' 15
 
 # every module founded in ES_MODULE_PATH has main functions like
-# do_list, do_set, do_help, do_usage, do_enable, do_disable. 
+# do_list, do_set, do_help, do_usage, do_enable, do_disable.
 # it is possible to have some sort of arbitrary functions in modules (this is bash)
 # needed for module operation
 es_do_list(){
@@ -49,16 +50,21 @@ es_do_configure(){
 
 # Load core functions
 source "${ES_CORE_PATH}/core.bash" || exit 255
+source "${ES_ESALRC}" || die -m "No esalrc config file"
 
 # Load necessary functions for the main script
 inherit colors default output
 
 es_load_module(){
-	local modname=${1} modpath="${ES_MODULES_PATH}"
+	local modname=${1}
 
- [[ -f "${modpath}/${modname}.esal" ]] && \
-		source $modpath/$modname.esal \
-		|| die -m "No such module \"$modname"\"
+	if ! (grep -qF "$modname" <<< "${ES_MODULES_AVAILABLE[@]}"); then
+		die -m "No such module \"$modname\""
+	fi
+
+	[[ -f "$ES_MODULES_PATH/${modname}.esal" ]] && \
+		source $ES_MODULES_PATH/$modname.esal || \
+		die -m "Module \"$modname\" dont exist in system"
 }
 
 # MAIN process start here
@@ -67,6 +73,11 @@ for i in ${@##--}; do
       action=("${modname[@]:1}")
 done
 
+# don't allow blacklisted modules from /etc/esalrc
+while read -r mod; do
+	ES_MODULES_AVAILABLE+=( $(basename "${mod/%.*}") )
+done < <(ls -1 ${ES_MODULES_PATH}/*.esal | grep -Ev ${blacklist})
+
 if [[ $# -gt 0 ]]; then
 	 case ${modname} in
 	   help | usage | version | configure )
@@ -74,26 +85,25 @@ if [[ $# -gt 0 ]]; then
 	  	 || die -m "Too many parameters" ;;
 	   * ) es_load_module "$modname" ;;
 	 esac
-	
+
 	 # every module consist of module parameters which can accept
-	 # standard parameters like (help,usage,version) are not needed as they 
+	 # standard parameters like (help,usage,version) are not needed as they
 	 # are standard
 	for i in "${MODULE_PARAMETERS}"; do
-		[[ $i == $action ]] && action="$i" 
+		[[ $i == $action ]] && action="$i"
 	done
-     
+
 	# modules calling
 	if ! [[ -n $action  ]]; then
 		es_do_${DEFAULT_ACTION}
-	else	
+	else
 		if is_function es_do_${action}; then
 			es_do_${action} "$@"
 		else
 			die -m "No such action \"$action\""
-			#es_do_${DEFAULT_ACTION}
 		fi
-	fi	
-	
+	fi
+
 else
 	# ececute this if there us no argugument at all
 	es_do_help
