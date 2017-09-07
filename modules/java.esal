@@ -15,74 +15,58 @@ DEFAULT_NAME_JRE=default-runtime
 DEFAULT_PATH_JRE=${JVM_DIR}/${DEFAULT_NAME_JRE}
 # end of specific module variables
 
-# here are supported fucntions, none of these wouldn't be
-# executed if there is no definition parameter inside MODULE_PARAMETERS
-describe_list() {
-	echo "List installed Java environments and enabled one"
-}
+describe_list(){ echo "List installed Java environments and enabled one"; }
+describe_set(){ echo "set <JAVA_ENV> as default"; }
+describe_show(){ echo "Show the current <JAVA_ENV>> implementation"; }
 
-describe_set() {
-	echo "set <JAVA_ENV> as default"
-}
-
-describe_show() {
-	echo "Show the current <JAVA_ENV>> implementation"
-}
-
-describe_fix() {
-	echo "Fix an invalid/broken default Java environment configuration"
-}
-
-# helper functions below
-# OK function
 get_installed_javas() {
-  if [[ -d ${JVM_DIR} ]]; then
-    for dir in $(find ${JVM_DIR} -mindepth 1 -maxdepth 1 -type d | sort); do
-      if [[ -x ${dir}/bin/javac ]]; then
+	if [[ -d ${JVM_DIR} ]]; then
+		for dir in $(find ${JVM_DIR} -mindepth 1 -maxdepth 1 -type d | sort); do
+			if [[ -x ${dir}/bin/javac ]]; then
 				javas+=(${dir/${JVM_DIR}\/})
-      else
-        if [[ -x ${dir}/jre/bin/java ]]; then
+			else
+				if [[ -x ${dir}/jre/bin/java ]]; then
 					javas+=(${dir/${JVM_DIR}\/}/jre)
-        fi
-      fi
-    done
-  fi
-	
+				fi
+			fi
+		done
+	fi
+
 	# return javas
-  echo ${javas[@]}
+	echo ${javas[@]}
 }
 
 get_default_java() {
-  path=$(readlink -e ${DEFAULT_PATH})
-  if [ "x${path}" != "x/dev/null" ]; then
-    echo ${path/${JVM_DIR}\/}
-  else
-    echo ""
-  fi
+	path=$(readlink -e ${DEFAULT_PATH})
+	if [ "x${path}" != "x/dev/null" ]; then
+		echo ${path/${JVM_DIR}\/}
+	else
+		echo ""
+	fi
 }
 
 # $1: Java environment name to test
 is_java_valid() {
-  test "x$1" != "x${DEFAULT_NAME}" && test -x ${JVM_DIR}/$1/bin/java
+	test "x$1" != "x${DEFAULT_NAME}" && test -x ${JVM_DIR}/$1/bin/java
 }
 
 set_default_link_to() {
-  new_default=$1
-  unlink ${DEFAULT_PATH} 2>/dev/null
-  ln -sf ${new_default} ${DEFAULT_PATH}
+	new_default=$1
+	unlink ${DEFAULT_PATH} 2>/dev/null
+	ln -sf ${new_default} ${DEFAULT_PATH}
 
-  unlink ${DEFAULT_PATH_JRE} 2>/dev/null
-  if [[ ${new_default} == */jre ]]; then
-    ln -sf ${new_default} ${DEFAULT_PATH_JRE}
-  else
-    ln -sf ${new_default}/jre ${DEFAULT_PATH_JRE}
-  fi
+	unlink ${DEFAULT_PATH_JRE} 2>/dev/null
+	if [[ ${new_default} == */jre ]]; then
+		ln -sf ${new_default} ${DEFAULT_PATH_JRE}
+	else
+		ln -sf ${new_default}/jre ${DEFAULT_PATH_JRE}
+	fi
 }
 
-# add local variables 
+# add local variables
 unset_default_link() {
-  unlink ${DEFAULT_PATH} 2>/dev/null
-  unlink ${DEFAULT_PATH_JRE} 2>/dev/null
+	unlink ${DEFAULT_PATH} 2>/dev/null
+	unlink ${DEFAULT_PATH_JRE} 2>/dev/null
 }
 # end of helper functions
 
@@ -96,26 +80,26 @@ do_help() {
 }
 
 do_list() {
-  installed_java=$(get_installed_javas)
-  if [[ ${#installed_java[@]} -eq 0 ]]; then
-    emsg "No compatible Java environment installed"
-  else
-    default_java=$(get_default_java)
-    emsg "Available Java environments:"
-    for java in ${installed_java[@]}; do
-      if [[ "${java}/jre" == "${default_java}" ]]; then
-        write_numbered_output -s "${java} (${java}/jre default)"
-      elif [[ ${java} == "${default_java}" ]]; then
-        write_numbered_output -s "${java} (default)"
-      else
-        write_numbered_output -s "${java}"
-      fi
-    done
-		
-    if [[ -z ${default_java} ]]; then
-       msg "No Java environment set as default"
-    fi
-  fi
+	installed_java=$(get_installed_javas)
+	if [[ ${#installed_java[@]} -eq 0 ]]; then
+		emsg "No compatible Java environment installed"
+	else
+		default_java=$(get_default_java)
+		emsg "Available Java environments:"
+		for java in ${installed_java[@]}; do
+			if [[ "${java}/jre" == "${default_java}" ]]; then
+				write_numbered_output -s "${java} (${java}/jre default)"
+			elif [[ ${java} == "${default_java}" ]]; then
+				write_numbered_output -s "${java} (default)"
+			else
+				write_numbered_output -s "${java}"
+			fi
+		done
+
+		if [[ -z ${default_java} ]]; then
+			msg "No Java environment set as default"
+		fi
+	fi
 }
 
 do_show() {
@@ -125,15 +109,15 @@ do_show() {
 }
 
 do_set() {
-  if ! is_java_valid $1; then
-    emsg "'${JVM_DIR}/$1' is not a valid Java environment path"
-    exit 1
-  fi
-  default=$(get_default_java)
-  if [ "x$1" != "x${default}" ] || ! is_java_valid ${default}; then
-    unset_default_link
-    set_default_link_to $1
-  fi
+	if ! is_java_valid $1; then
+		emsg "'${JVM_DIR}/$1' is not a valid Java environment path"
+		exit 1
+	fi
+	default=$(get_default_java)
+	if [ "x$1" != "x${default}" ] || ! is_java_valid ${default}; then
+		unset_default_link
+		set_default_link_to $1
+	fi
 
 }
 # every fucntion is sourced and executed if modulename is valid on cmd line

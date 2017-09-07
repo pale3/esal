@@ -1,26 +1,27 @@
-# -*-esal-*- module pager vim:set ft=sh:
-# THIS IS SKELETON FILE FOR *.esal module creation
+# -*-esal-*- module <modname> vim:set ft=sh:
+# THIS IS SKELETON FILE FOR *.esal module creation and it's minimal set of vars and functions
+#
+MODNAME=""				# Optional
+DESCRIPTION=""			# Required
+MODULE_VERSION=""		# Required
+MODULE_PARAMETERS=""	# Required
+DEFAULT_ACTION=""		# Required
+USAGE_HELP=""			# Required
 
-# Optional variable
-MODNAME=""
+# Here is minimal set of functions, when implementing new modules,
+# Actions based description functions
+describe_help(){}
+describe_usage(){}
+describe_version(){}
 
-# Optional variable
-VAR=""
-
-# required variable
-DESCRIPTION=""
-
-#required variable
-USAGE_HELP=""
-
-# required variable
-MODULE_PARAMETERS=""
-
-# here are supported fucntions, none of these wouldn't be
-# executed if there is no definition parameter inside MODULE_PARAMETERS
+# Action based functions
 do_help(){}
-do_set(){}
-do_list(){}
-do_show(){}
+do_usage(){}
+do_version(){}
 
-# every fucntion is sourced and executed if modulename is valid on cmd line
+# Particular module helper functions are welcomed as well as extra vars, if they are general enough,
+# they will likely get into shared libs space.
+
+# specific module, example functions:
+do_write(){}
+do_read(){}

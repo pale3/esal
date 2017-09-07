@@ -1,4 +1,4 @@
-# -*-esal-*- module pager vim:set ft=sh:
+# -*-esal-*- module news vim:set ft=sh:
 # MODULE INFO:
 MODNAME="news"
 DESCRIPTION="Display latest news from archlinux.org"
@@ -39,7 +39,7 @@ do_help(){
 do_read(){
 	local author link description pubdate fold
 	local item=$1 count
-	
+
 	[[ -z $item ]] && die -m "No feed item specified"
 
 	require_tool xmlstarlet
@@ -47,12 +47,12 @@ do_read(){
 
 	count=$(xmlstarlet sel -t -c "count(//item)" "$NEWS_DIR/feed.xml")
 	fold=$(tput cols)
-	
+
 	xmlstarlet sel -t -c "//item[$item]" "$NEWS_DIR/feed.xml" > "$NEWS_DIR/item.$item.xml"
 
 	emsg "Reading news item $item/$count.."
 	echo 
-	
+
 	for i in title link pubDate; do 
 		eval $i=\"$(xmlstarlet sel -t -m "//item" -v "$i" $NEWS_DIR/item.$item.xml)\"
 	done
@@ -70,7 +70,7 @@ do_list(){
 	require_tool xmlstarlet
 
 	! [[ -f $NEWS_DIR/feed.xml ]] && die -m "Missing feed.xml, fetch feeds first"
-	
+
 	local n=0
 	emsg "Listing feeds from $NEWS_FEED_URL"
 	while read -r title; do

@@ -7,7 +7,7 @@ MODULE_PARAMETERS="list enable disable"
 DEFAULT_ACTION="help"
 USAGE_HELP="${ES_BINARY} ${MODNAME} <action> <option>"
 
-find_targets() {
+find_targets(){
 	local bcdir bc
 
 	for bcdir in "/usr/share/bash-completion/*"
@@ -18,7 +18,7 @@ find_targets() {
 	done
 }
 
-is_enabled() {
+is_enabled(){
 	local bcdir
 
 	bcdir=${ROOT%/}/${HOME}/.bash_completion.d
@@ -30,30 +30,30 @@ is_enabled() {
 	[[ -e ${bcdir}/$1 ]]
 }
 
-describe_list() {
+describe_list(){
 	echo "List available completions"
 }
 
-describe_enable() {
+describe_enable(){
 	echo "Enable specified completion(s)"
 }
 
-describe_disable() {
+describe_disable(){
 	echo "Disable specified completion(s)"
 }
 
-do_list() {
+do_list(){
 	local targets opts i
 	targets=( $(find_targets) )
 
 	emsg "Available completions:"
 	for (( i = 0; i < ${#targets[@]}; i++ )); do
-        is_enabled "${targets[i]}"
+		is_enabled "${targets[i]}"
 		write_numbered_output -h "${targets[i]}" "$i"
 	done
 }
 
-do_enable() {
+do_enable(){
 	local bcdir bc mode="" file target targets
 
 	bcdir=${ROOT%/}${HOME}/.bash_completion.d
@@ -93,46 +93,46 @@ do_enable() {
 		case "${bc}" in
 			# absolute path
 			/*)
-				file=${ROOT%/}/${bc}
-				;;
+			file=${ROOT%/}/${bc}
+			;;
 			# relative path
 			*/*)
-				file=${ROOT%/}/${PWD}/${bc}
-				;;
+			file=${ROOT%/}/${PWD}/${bc}
+			;;
 			# no path
 			*)
-				# assume /usr/share/bash-completion
-				file=${EROOT%/}/usr/share/bash-completion/completions/${bc}
-				if [[ ! -f ${file} ]]; then
-					for x in ${ES_BASHCOMP_DIRS}; do # TODO: FIX THIS
-						[[ -f ${x}/${bc} ]] && file=${x}/${bc}
-					done
-				fi
-				;;
-		esac
+			# assume /usr/share/bash-completion
+			file=${EROOT%/}/usr/share/bash-completion/completions/${bc}
+			if [[ ! -f ${file} ]]; then
+				for x in ${ES_BASHCOMP_DIRS}; do # TODO: FIX THIS
+					[[ -f ${x}/${bc} ]] && file=${x}/${bc}
+				done
+			fi
+			;;
+	esac
 
-		# does it exist?
-		if [[ ! -f ${file} ]]; then
-			die -m "${file} doesn't exist"
-			continue
-		fi
+	# does it exist?
+	if [[ ! -f ${file} ]]; then
+		die -m "${file} doesn't exist"
+		continue
+	fi
 
-		# already installed?
-		if [[ -e ${bcdir}/$(basename ${bc}) ]]; then
-			die -m "$(basename ${bc}) is already installed"
-			continue
-		fi
+	# already installed?
+	if [[ -e ${bcdir}/$(basename ${bc}) ]]; then
+		die -m "$(basename ${bc}) is already installed"
+		continue
+	fi
 
-		# finally, create the symlink
-		ln -s "$(relative_name "${file}" "${bcdir}")" "${bcdir}/" \
-			|| die -m "Failed to create symlink from ${file} to ${bcdir}"
-	done
+	# finally, create the symlink
+	ln -s "$(relative_name "${file}" "${bcdir}")" "${bcdir}/" \
+		|| die -m "Failed to create symlink from ${file} to ${bcdir}"
+done
 }
 
 ### disable action ###
 
 
-do_disable() {
+do_disable(){
 	local bcdir bc targets target file
 
 	bcdir=${ROOT%/}/${HOME}/.bash_completion.d

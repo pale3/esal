@@ -7,18 +7,9 @@ MODULE_PARAMETERS="enable disable list"
 DEFAULT_ACTION="help"
 USAGE_HELP="${ES_BINARY} ${MODNAME} <action> <options>"
 
-# describe functions $describe_{show,list,set}
-describe_enable(){
-	echo "Enable specified fontconfig .conf file(s)"
-}
-
-describe_disable(){
-	echo "Disable specified fontconfig .conf file(s)"
-}
-
-describe_list(){
-	echo "List avaliable fontconfig .conf file(s)"
-}
+describe_enable(){ echo "Enable specified fontconfig .conf file(s)"; }
+describe_disable(){ echo "Disable specified fontconfig .conf file(s)"; }
+describe_list(){ echo "List avaliable fontconfig .conf file(s)"; }
 
 find_targets(){
 	local targets bc i=0
@@ -29,7 +20,6 @@ find_targets(){
 	done
 
 	echo -ne ${targets} | sort -u
-
 }
 
 is_enabled(){
@@ -37,20 +27,18 @@ is_enabled(){
 
 	[[ -e ${bcdir}/${1} ]] || return 1
 	return 0
-
 }
 
 do_list(){
 	local s
 	targets=( $(find_targets) )
-		emsg "Avaliable fontconfig .conf file(s) (enabled is ${B}*${N}${G}):${N}"
-	
-	for (( s=0; s < ${#targets[@]}; ++s )); do
-	is_enabled ${targets[s]} && targets[s]="${targets[s]} ${B}*${N} "
-			write_numbered_output -h "${targets[s]}" "$s"
-	
-	done
+	emsg "Avaliable fontconfig .conf file(s) (enabled is ${B}*${N}${G}):${N}"
 
+	for (( s=0; s < ${#targets[@]}; ++s )); do
+		is_enabled ${targets[s]} && targets[s]="${targets[s]} ${B}*${N} "
+		write_numbered_output -h "${targets[s]}" "$s"
+
+	done
 	return 0
 }
 
@@ -90,50 +78,49 @@ do_enable() {
 		case "${bc}" in
 			# absolute path
 			/*)
-				file="/${bc}"
-				;;
+			file="/${bc}"
+			;;
 			# relative path
 			*/*)
-				file="/${PWD}/${bc}"
-				;;
+			file="/${PWD}/${bc}"
+			;;
 			# no path
 			*)
-				# CWD
-				if [[ -f ${bc} ]] ; then
-					file="/${PWD}/${bc}"
+			# CWD
+			if [[ -f ${bc} ]] ; then
+				file="/${PWD}/${bc}"
 				# assume /etc/fonts/conf.avail
-				elif [[ -f /etc/fonts/conf.avail/${bc} ]]
-				then
-					file="/etc/fonts/conf.avail/${bc}"
-				else
-					if [[ -n "${ES_FONTCONFIG_DIRS}" ]] ; then
-						for x in ${ES_FONTCONFIG_DIRS} ; do
-							[[ -f ${x}/${bc} ]] && file="${x}/${bc}"
-						done
-					fi
-
-					[[ -e ${file} ]] || \
-						file="/etc/fonts/conf.avail/${bc}"
+			elif [[ -f /etc/fonts/conf.avail/${bc} ]]
+			then
+				file="/etc/fonts/conf.avail/${bc}"
+			else
+				if [[ -n "${ES_FONTCONFIG_DIRS}" ]] ; then
+					for x in ${ES_FONTCONFIG_DIRS} ; do
+						[[ -f ${x}/${bc} ]] && file="${x}/${bc}"
+					done
 				fi
-				;;
-		esac
 
-		# does it exist?
-		if [[ ! -e ${file} ]] ; then
-			msg "${file} doesn't exist"
-			continue
-		fi
+				[[ -e ${file} ]] || file="/etc/fonts/conf.avail/${bc}"
+			fi
+			;;
+	esac
 
-		# already installed?
-		if [[ -e ${bcdir}/$(basename ${bc}) ]] ; then
-			msg "$(basename ${bc}) is already installed"
-			continue
-		fi
+	# does it exist?
+	if [[ ! -e ${file} ]] ; then
+		msg "${file} doesn't exist"
+		continue
+	fi
 
-		# finally, create the symlink
-		ln -s "${file}" "${bcdir}" || \
-			die -m "Failed to create symlink from '${file}' to '${bcdir}'"
-	done
+	# already installed?
+	if [[ -e ${bcdir}/$(basename ${bc}) ]] ; then
+		msg "$(basename ${bc}) is already installed"
+		continue
+	fi
+
+	# finally, create the symlink
+	ln -s "${file}" "${bcdir}" || \
+		die -m "Failed to create symlink from '${file}' to '${bcdir}'"
+done
 }
 
 do_disable() {

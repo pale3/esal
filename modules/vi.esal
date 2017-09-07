@@ -1,4 +1,4 @@
-# -*esal*- module fontconfig vim:set ft=sh:
+# -*esal*- module vi vim:set ft=sh:
 # MODULE INFO:
 MODNAME="vi"
 DESCRIPTION="Manage /usr/bin/vi implementations"
@@ -8,17 +8,9 @@ DEFAULT_ACTION="help"
 USAGE_HELP="${ES_BINARY} ${MODNAME} <action> <option>"
 
 # describe functions $describe_{show,list,set}
-describe_list() {
-	echo "List available vi implementations"
-}
-
-describe_set() {
-	echo "Set a new vi implementation provider"
-}
-
-describe_show() {
-	echo "Show the current vi implementation"
-}
+describe_list(){ echo "List available vi implementations"; }
+describe_set(){ echo "Set new vi implementation provider"; }
+describe_show(){ echo "Show the current vi implementation"; }
 
 # find a list of vi symlink targets, best first
 find_targets() {
@@ -65,9 +57,9 @@ set_symlinks() {
 }
 
 check_symlink(){
-	local p=${1} t=${2} sym=$( ls -la /usr/bin/vi | awk -F"-> " '{print $NF}' ) 
+	local p=${1} t=${2} sym=$( ls -la /usr/bin/vi | awk -F"-> " '{print $NF}' )
 	sym=$(basename $sym )
-	
+
 	#-c compare with target so we can get mark
 	#-o get only symlink point
 	case $p in
@@ -79,7 +71,7 @@ check_symlink(){
 # do functions $do_{show,list,set}
 do_show() {
 	[[ -z "${@:3}" ]] || die -m "Too many parameters"
-	
+
 	emsg "Current vi implementation:"
 	if [[ -L "/usr/bin/vi" ]] ; then
 		check_symlink -o
@@ -104,7 +96,7 @@ do_list() {
 }
 
 do_set() {
-	local p="${@:3}"	
+	local p="${@:3}"
 	[[ $# -gt 3 ]] && die -m "Too many param"
 
   if [[ -z "${p}" ]] ; then
@@ -131,7 +123,7 @@ do_help(){
 	show_default_usage "actions"
 	emsg "Extra actions:"
 	show_module_desc
-	
+
 }
 
 do_usage(){
