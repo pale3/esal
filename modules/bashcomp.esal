@@ -7,6 +7,16 @@ MODULE_PARAMETERS="list enable disable"
 DEFAULT_ACTION="help"
 USAGE_HELP="${ES_BINARY} ${MODNAME} <action> <option>"
 
+describe_list(){
+	msg "List available completions"
+}
+describe_enable(){
+	msg "Enable specified completion(s)"
+}
+describe_disable(){
+	msg "Disable specified completion(s)"
+}
+
 find_targets(){
 	local bcdir bc
 
@@ -30,18 +40,6 @@ is_enabled(){
 	[[ -e ${bcdir}/$1 ]]
 }
 
-describe_list(){
-	echo "List available completions"
-}
-
-describe_enable(){
-	echo "Enable specified completion(s)"
-}
-
-describe_disable(){
-	echo "Disable specified completion(s)"
-}
-
 do_list(){
 	local targets opts i
 	targets=( $(find_targets) )
@@ -52,7 +50,6 @@ do_list(){
 		write_numbered_output -h "${targets[i]}" "$i"
 	done
 }
-
 do_enable(){
 	local bcdir bc mode="" file target targets
 
@@ -128,10 +125,6 @@ do_enable(){
 		|| die -m "Failed to create symlink from ${file} to ${bcdir}"
 done
 }
-
-### disable action ###
-
-
 do_disable(){
 	local bcdir bc targets target file
 
@@ -175,17 +168,15 @@ do_disable(){
 }
 
 do_help(){
-	echo "$DESCRIPTION"
-	echo "Usage: $USAGE_HELP"
+	msg "$DESCRIPTION"
+	msg "Usage: $USAGE_HELP"
 	show_default_usage "actions"
 	emsg "Extra actions:"
 	show_module_desc
 }
-
 do_usage(){
-	echo "Usage: $USAGE_HELP"
+	msg "Usage: $USAGE_HELP"
 }
-
 do_version(){
-	echo ":: ${MODULE_VERSION}"
+	msg ":: ${MODULE_VERSION}"
 }

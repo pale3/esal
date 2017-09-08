@@ -12,30 +12,33 @@ USAGE_HELP="${ES_BINARY} $MODNAME} <action> <option>"
 NEWS_DIR="/home/marko/news"
 NEWS_FEED_URL="https://www.archlinux.org/feeds/news/"
 
-# TODO: 
+# TODO:
 # 1. diff old and new news items and notify if there is new one
 # 2. store news somwhere in /var permissions are needed
 # 3. action <mark> unread|read
 # 4. when item is red, mark it as read
 
 describe_list(){
-	echo "List all news items"
+	msg "List all news items"
 }
 describe_read(){
-	echo "Read particular news item"
+	msg "Read particular news item"
 }
 describe_fetch(){
-	echo "Fetch latest news from remote"
+	msg "Fetch latest news from remote"
 }
 
-do_help(){
-	msg "$DESCRIPTION"
-	msg "Usage: $USAGE_HELP"
-	show_default_usage "actions"
-	emsg "Extra actions:"
-	show_module_desc
-}
+do_list(){
+	require_tool xmlstarlet
 
+	! [[ -f $NEWS_DIR/feed.xml ]] && die -m "Missing feed.xml, fetch feeds first"
+
+	local n=0
+	emsg "Listing feeds from $NEWS_FEED_URL"
+	while read -r title; do
+		write_numbered_output -h "${title}" n++
+	done < <(xmlstarlet sel -t -m "//item" -v "title" -n "$NEWS_DIR/feed.xml")
+}
 do_read(){
 	local author link description pubdate fold
 	local item=$1 count
@@ -51,9 +54,9 @@ do_read(){
 	xmlstarlet sel -t -c "//item[$item]" "$NEWS_DIR/feed.xml" > "$NEWS_DIR/item.$item.xml"
 
 	emsg "Reading news item $item/$count.."
-	echo 
+	echo
 
-	for i in title link pubDate; do 
+	for i in title link pubDate; do
 		eval $i=\"$(xmlstarlet sel -t -m "//item" -v "$i" $NEWS_DIR/item.$item.xml)\"
 	done
 	description=$(xmlstarlet sel -t -m "//item" -v "description" $NEWS_DIR/item.$item.xml | xmlstarlet unesc )
@@ -62,25 +65,26 @@ do_read(){
 	msg "Date: $pubDate"
 	msg "Link: $link"
 	msg "Description:"
-	echo 
+	echo
 	msg "${description[@]}" | w3m -dump -T text/html | fold -w $(( fold - 5 )) | sed "s/^/ /"
 }
-
-do_list(){
-	require_tool xmlstarlet
-
-	! [[ -f $NEWS_DIR/feed.xml ]] && die -m "Missing feed.xml, fetch feeds first"
-
-	local n=0
-	emsg "Listing feeds from $NEWS_FEED_URL"
-	while read -r title; do
-		write_numbered_output -h "${title}" n++
-	done < <(xmlstarlet sel -t -m "//item" -v "title" -n "$NEWS_DIR/feed.xml")
-}
-
 do_fetch(){
 	require_tool curl
 
 	emsg "Updating latest news from $NEWS_FEED_URL"
 	curl -sS "$NEWS_FEED_URL" -o "$NEWS_DIR/feed.xml" || die -m "Failed to fetch feeds"
+}
+
+do_help(){
+	msg "$DESCRIPTION"
+	msg "Usage: $USAGE_HELP"
+	show_default_usage "actions"
+	emsg "Extra actions:"
+	show_module_desc
+}
+do_usage(){
+	msg "Usage: $USAGE_HELP"
+}
+do_version(){
+	msg ":: ${MODULE_VERSION}"
 }

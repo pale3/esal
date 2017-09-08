@@ -3,7 +3,7 @@
 MODNAME="visual"
 DESCRIPTION="Manage the VISUAL environment variable"
 MODULE_VERSION="${MODNAME} 1.0"
-MODULE_PARAMETERS="show list set"
+MODULE_PARAMETERS="list set show"
 ENV_VAR="VISUAL"
 LIST="/usr/bin/nano
       /usr/bin/emacs

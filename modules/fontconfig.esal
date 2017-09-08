@@ -3,13 +3,19 @@
 MODNAME="fontconfig"
 DESCRIPTION="Manage fontconfig /etc/fonts/conf.d symlinks"
 MODULE_VERSION="${MODNAME} 1.0"
-MODULE_PARAMETERS="enable disable list"
+MODULE_PARAMETERS="list enable disable"
 DEFAULT_ACTION="help"
 USAGE_HELP="${ES_BINARY} ${MODNAME} <action> <options>"
 
-describe_enable(){ echo "Enable specified fontconfig .conf file(s)"; }
-describe_disable(){ echo "Disable specified fontconfig .conf file(s)"; }
-describe_list(){ echo "List avaliable fontconfig .conf file(s)"; }
+describe_list(){
+	msg "List avaliable fontconfig .conf file(s)"
+}
+describe_enable(){
+	msg "Enable specified fontconfig .conf file(s)"
+}
+describe_disable(){
+	msg "Disable specified fontconfig .conf file(s)"
+}
 
 find_targets(){
 	local targets bc i=0
@@ -41,7 +47,6 @@ do_list(){
 	done
 	return 0
 }
-
 do_enable() {
 	local bc bcdir="/etc/fonts/conf.d"
 
@@ -120,9 +125,8 @@ do_enable() {
 	# finally, create the symlink
 	ln -s "${file}" "${bcdir}" || \
 		die -m "Failed to create symlink from '${file}' to '${bcdir}'"
-done
+	done
 }
-
 do_disable() {
 	local bc bcdir="/etc/fonts/conf.d"
 
@@ -161,17 +165,15 @@ do_disable() {
 }
 
 do_help(){
-	echo "$DESCRIPTION"
-	echo "Usage: $USAGE_HELP"
+	msg "$DESCRIPTION"
+	msg "Usage: $USAGE_HELP"
 	show_default_usage "actions"
 	emsg "Extra actions:"
 	show_module_desc
 }
-
 do_usage(){
-	echo "Usage: $USAGE_HELP"
+	msg "Usage: $USAGE_HELP"
 }
-
 do_version(){
-	echo ":: ${MODULE_VERSION}"
+	msg ":: ${MODULE_VERSION}"
 }

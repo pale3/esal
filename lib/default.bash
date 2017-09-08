@@ -5,15 +5,13 @@ USAGE_HELP="${ES_BINARY} <module name> <module option>"
 ES_VERSION="${ES_BINARY} 1.0"
 
 describe_help(){
-	echo "Display help message"
+	msg "Display help message"
 }
-
 describe_usage(){
-	echo "Display usage message"
+	msg "Display usage message"
 }
-
 describe_version(){
-	echo "Display version information"
+	msg "Display version information"
 }
 
 show_default_usage(){
@@ -58,15 +56,13 @@ show_module_desc(){
 }
 
 do_help(){
-	echo "Usage: $USAGE_HELP"
+	msg "Usage: $USAGE_HELP"
 	show_default_usage "modules"
 	show_module_desc
 }
-
 do_usage(){
-	echo "Usage: $USAGE_HELP"
+	msg "Usage: $USAGE_HELP"
 }
-
 do_version(){
-	echo ":: ${ES_VERSION}"
+	msg ":: ${ES_VERSION}"
 }

@@ -1,3 +1,5 @@
+# create environment config
+# TODO: allow local user config
 create_envconf(){
 	local config=${1} profdesc envdesc chk
 
@@ -29,23 +31,22 @@ create_envconf(){
 
 # Pseudo function its not ment to be called directly
 read_env_value(){
-	local location="/etc/env.conf"
-	cur=
-	#value=$( awk -F"="*\" "/${ENV_VAR}/ {print $2}")
-	if $( grep "${ENV_VAR}" $location); then
+	local env_conf="/etc/env.conf" cur=
+
+	if $( grep "${ENV_VAR}" $env_conf); then
 		cur=true
 	fi
-	echo ${cur}
+	echo $cur
 }
 
 write_env_value(){
-	local location="$ES_ENVCONF" value="${1}"
+	local env_conf="$ES_ENVCONF" value="${1}"
 
-	! [[ -f $location ]] && die -m "$location doesn't exist, use --configure!"
-	  [[ -w $location ]] || die -m "root privilages required!"
+	! [[ -f $env_conf ]] && die -m "$env_conf doesn't exist, use --configure first!"
+	  [[ -w $env_conf ]] || die -m "root privilages required!"
 
 	cur=( $(read_env_value) )
 	# if cur ENV_VAR exist in env.conf then replace just value of var
-	[[ -z $cur ]] && echo "export ${value}" >> "$location" || \
-		$(sed -i "s|${ENV_VAR}=.*|${value}|" $location)
+	[[ -z $cur ]] && echo "export ${value}" >> "$env_conf" || \
+		$(sed -i "s|${ENV_VAR}=.*|${value}|" $env_conf)
 }

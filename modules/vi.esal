@@ -7,25 +7,30 @@ MODULE_PARAMETERS="list set show"
 DEFAULT_ACTION="help"
 USAGE_HELP="${ES_BINARY} ${MODNAME} <action> <option>"
 
-# describe functions $describe_{show,list,set}
-describe_list(){ echo "List available vi implementations"; }
-describe_set(){ echo "Set new vi implementation provider"; }
-describe_show(){ echo "Show the current vi implementation"; }
+describe_list(){
+	msg "List available vi implementations"
+}
+describe_set(){
+	msg "Set new vi implementation provider"
+}
+describe_show(){
+	msg "Show the current vi implementation"
+}
 
 # find a list of vi symlink targets, best first
 find_targets() {
 	local f
 	for f in \
-			/usr/bin/vim \
-			/usr/bin/nvi \
-			/usr/bin/elvis \
-			/usr/bin/vile \
-			/usr/bin/gvim \
-			/usr/bin/xvile \
+		/usr/bin/vim \
+		/usr/bin/nvi \
+		/usr/bin/elvis \
+		/usr/bin/vile \
+		/usr/bin/gvim \
+		/usr/bin/xvile \
 		; do
-		if [[ -f "${f}" ]] ; then
-			echo $(basename "${f}" )
-		fi
+	if [[ -f "${f}" ]] ; then
+		echo $(basename "${f}" )
+	fi
 	done
 }
 
@@ -48,9 +53,9 @@ set_symlinks() {
 	if [[ -f "${dir}/${target}" ]] ; then
 		remove_symlinks
 
-	# it's not okay if these fail
-	ln -s "${dir}/${target}" "/usr/bin/vi" \
-		|| die -m "Couldn't set ${target} /usr/bin/vi symlink"
+		# it's not okay if these fail
+		ln -s "${dir}/${target}" "/usr/bin/vi" \
+			|| die -m "Couldn't set ${target} /usr/bin/vi symlink"
 	else
 		die -m "Target \"${1}\" doesn't appear to be valid!"
 	fi
@@ -68,7 +73,18 @@ check_symlink(){
 	esac
 }
 
-# do functions $do_{show,list,set}
+do_list() {
+	[[ -z "${@:3}" ]] || die -m "Too many parameters"
+
+	local i targets
+	emsg "Available vi implementations:"
+	targets=( $(find_targets ) )
+	for (( i = 0; i < ${#targets[@]}; i++ )); do
+		# get current vi implementation, if /usr/bin/vi
+		[[ -e /usr/bin/vi ]] && check_symlink -c "${targets[i]}"
+		write_numbered_output -s "${targets[i]}" "$i"
+	done
+}
 do_show() {
 	[[ -z "${@:3}" ]] || die -m "Too many parameters"
 
@@ -81,25 +97,11 @@ do_show() {
 		msg "(unset)"
 	fi
 }
-
-do_list() {
-	[[ -z "${@:3}" ]] || die -m "Too many parameters"
-
-	local i targets
-	emsg "Available vi implementations:"
-	targets=( $(find_targets ) )
-	for (( i = 0; i < ${#targets[@]}; i++ )); do
-			# get current vi implementation, if /usr/bin/vi
-			[[ -e /usr/bin/vi ]] && check_symlink -c "${targets[i]}"
-			write_numbered_output -s "${targets[i]}" "$i"
-	done
-}
-
 do_set() {
 	local p="${@:3}"
 	[[ $# -gt 3 ]] && die -m "Too many param"
 
-  if [[ -z "${p}" ]] ; then
+	if [[ -z "${p}" ]] ; then
 		die -m "You didn't give me a provider name"
 
 	elif [[ -L "/usr/bin/vi" ]] ; then
@@ -125,11 +127,9 @@ do_help(){
 	show_module_desc
 
 }
-
 do_usage(){
-	echo "Usage: ${USAGE_HELP}"
+	msg "Usage: ${USAGE_HELP}"
 }
-
 do_version(){
-	echo ":: ${MODULE_VERSION}"
+	msg ":: ${MODULE_VERSION}"
 }

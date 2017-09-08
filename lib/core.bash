@@ -57,8 +57,10 @@ relative_name() {
 	echo "${path:-.}"
 }
 
+# Name: require_tool [Pubclic Function]
+# Description: confirm if particular binary exist in system
 require_tool(){
-	local t="$1"
-	! ( $(type $t &> /dev/null) ) && die -m "Missing '$t', please install it"
+	local bin="$1"
+	! ( $(type $bin &> /dev/null) ) && die -m "Missing '$bin', please install it first"
 	return 0
 }

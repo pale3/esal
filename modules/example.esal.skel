@@ -14,14 +14,14 @@ describe_help(){}
 describe_usage(){}
 describe_version(){}
 
-# Action based functions
-do_help(){}
-do_usage(){}
-do_version(){}
-
 # Particular module helper functions are welcomed as well as extra vars, if they are general enough,
 # they will likely get into shared libs space.
 
 # specific module, example functions:
 do_write(){}
 do_read(){}
+
+# Action based functions
+do_help(){}
+do_usage(){}
+do_version(){}

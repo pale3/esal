@@ -3,7 +3,7 @@
 MODNAME="java"
 DESCRIPTION="Manage java environmet"
 MODULE_VERSION="${MODNAME} 1.0"
-MODULE_PARAMETERS="list show set"
+MODULE_PARAMETERS="list set show"
 DEFAULT_ACTION="help"
 USAGE_HELP="${ES_BINARY} $MODNAME} <action> <option>"
 
@@ -15,9 +15,15 @@ DEFAULT_NAME_JRE=default-runtime
 DEFAULT_PATH_JRE=${JVM_DIR}/${DEFAULT_NAME_JRE}
 # end of specific module variables
 
-describe_list(){ echo "List installed Java environments and enabled one"; }
-describe_set(){ echo "set <JAVA_ENV> as default"; }
-describe_show(){ echo "Show the current <JAVA_ENV>> implementation"; }
+describe_list(){
+	msg "List installed Java environments and enabled one"
+}
+describe_set(){
+	msg "set <JAVA_ENV> as default"
+}
+describe_show(){
+	msg "Show the current <JAVA_ENV>> implementation"
+}
 
 get_installed_javas() {
 	if [[ -d ${JVM_DIR} ]]; then
@@ -36,7 +42,7 @@ get_installed_javas() {
 	echo ${javas[@]}
 }
 
-get_default_java() {
+get_default_java(){
 	path=$(readlink -e ${DEFAULT_PATH})
 	if [ "x${path}" != "x/dev/null" ]; then
 		echo ${path/${JVM_DIR}\/}
@@ -46,11 +52,11 @@ get_default_java() {
 }
 
 # $1: Java environment name to test
-is_java_valid() {
+is_java_valid(){
 	test "x$1" != "x${DEFAULT_NAME}" && test -x ${JVM_DIR}/$1/bin/java
 }
 
-set_default_link_to() {
+set_default_link_to(){
 	new_default=$1
 	unlink ${DEFAULT_PATH} 2>/dev/null
 	ln -sf ${new_default} ${DEFAULT_PATH}
@@ -64,20 +70,11 @@ set_default_link_to() {
 }
 
 # add local variables
-unset_default_link() {
+unset_default_link(){
 	unlink ${DEFAULT_PATH} 2>/dev/null
 	unlink ${DEFAULT_PATH_JRE} 2>/dev/null
 }
 # end of helper functions
-
-# begining of regular esal functions
-do_help() {
-	msg "$DESCRIPTION"
-	msg "Usage: $USAGE_HELP"
-	show_default_usage "actions"
-	emsg "Extra actions:"
-	show_module_desc
-}
 
 do_list() {
 	installed_java=$(get_installed_javas)
@@ -101,14 +98,7 @@ do_list() {
 		fi
 	fi
 }
-
-do_show() {
-	local default=$(get_default_java)
-	emsg "Default $MODNAME environment"
-	write_ad_output "$default"
-}
-
-do_set() {
+do_set(){
 	if ! is_java_valid $1; then
 		emsg "'${JVM_DIR}/$1' is not a valid Java environment path"
 		exit 1
@@ -118,6 +108,23 @@ do_set() {
 		unset_default_link
 		set_default_link_to $1
 	fi
-
 }
-# every fucntion is sourced and executed if modulename is valid on cmd line
+do_show(){
+	local default=$(get_default_java)
+	emsg "Default $MODNAME environment"
+	write_ad_output "$default"
+}
+
+do_help(){
+	msg "$DESCRIPTION"
+	msg "Usage: $USAGE_HELP"
+	show_default_usage "actions"
+	emsg "Extra actions:"
+	show_module_desc
+}
+do_usage(){
+	msg "Usage: $USAGE_HELP"
+}
+do_version(){
+	msg ":: ${MODULE_VERSION}"
+}
