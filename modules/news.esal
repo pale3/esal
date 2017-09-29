@@ -2,14 +2,13 @@
 # MODULE INFO:
 MODNAME="news"
 DESCRIPTION="Display latest news from archlinux.org"
-MODULE_VERSION="${MODNAME} 0.4"
+MODULE_VERSION="${MODNAME} 0.5"
 MODULE_PARAMETERS="list read fetch"
 DEFAULT_ACTION="help"
-USAGE_HELP="${ES_BINARY} $MODNAME} <action> <option>"
+USAGE_HELP="${ES_BINARY} $MODNAME <action> <option>"
 
 # required module variable
-#NEWS_DIR="/var/spool/news"
-NEWS_DIR="/home/marko/news"
+NEWS_DIR="$HOME/.cache/$ES_BINARY/news"
 NEWS_FEED_URL="https://www.archlinux.org/feeds/news/"
 
 # TODO:
@@ -43,6 +42,8 @@ do_read(){
 	local author link description pubdate fold
 	local item=$1 count
 
+	! [[ -f $NEWS_DIR/feed.xml ]] && die -m "Missing feed.xml, fetch feeds first"
+
 	[[ -z $item ]] && die -m "No feed item specified"
 
 	require_tool xmlstarlet
@@ -50,6 +51,8 @@ do_read(){
 
 	count=$(xmlstarlet sel -t -c "count(//item)" "$NEWS_DIR/feed.xml")
 	fold=$(tput cols)
+
+	[[ $item -gt $count ]] && die -m "No such feed item, $item"
 
 	xmlstarlet sel -t -c "//item[$item]" "$NEWS_DIR/feed.xml" > "$NEWS_DIR/item.$item.xml"
 
@@ -72,7 +75,8 @@ do_fetch(){
 	require_tool curl
 
 	emsg "Updating latest news from $NEWS_FEED_URL"
-	curl -sS "$NEWS_FEED_URL" -o "$NEWS_DIR/feed.xml" || die -m "Failed to fetch feeds"
+	! [[ -d $NEWS_DIR ]] && mkdir -p $NEWS_DIR
+	curl -sS "$NEWS_FEED_URL" -o "$NEWS_DIR/feed.xml" 2>/dev/null || die -m "Failed to fetch feeds"
 }
 
 do_help(){
