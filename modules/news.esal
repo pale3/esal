@@ -27,15 +27,25 @@ describe_fetch(){
 	msg "Fetch latest news from remote"
 }
 
+is_read(){
+	local n=$1
+
+	[[ -f $NEWS_DIR/item.$n.xml ]] || return 1
+	return 0
+}
+
 do_list(){
 	require_tool xmlstarlet
 
 	! [[ -f $NEWS_DIR/feed.xml ]] && die -m "Missing feed.xml, fetch feeds first"
 
-	local n=0
+	local n=0 t=1
+	declare -a item
 	emsg "Listing feeds from $NEWS_FEED_URL"
 	while read -r title; do
-		write_numbered_output -h "${title}" n++
+		! is_read $t && item[n]="${B}$title${N}" || item[n]="$title"
+		write_numbered_output -h "${item[n]}" n++
+		let t++
 	done < <(xmlstarlet sel -t -m "//item" -v "title" -n "$NEWS_DIR/feed.xml")
 }
 do_read(){
