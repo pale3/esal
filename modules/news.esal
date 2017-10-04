@@ -11,11 +11,6 @@ USAGE_HELP="${ES_BINARY} $MODNAME <action> <option>"
 NEWS_DIR="$HOME/.cache/$ES_BINARY/news"
 NEWS_FEED_URL="https://www.archlinux.org/feeds/news/"
 
-# TODO:
-# 1. diff old and new news items and notify if there is new one
-# 2. store news somwhere in /var permissions are needed
-# 3. action <mark> unread|read
-# 4. when item is red, mark it as read
 
 describe_list(){
 	msg "List all news items"
@@ -37,7 +32,7 @@ is_read(){
 do_list(){
 	require_tool xmlstarlet
 
-	! [[ -f $NEWS_DIR/feed.xml ]] && die -m "Missing feed.xml, fetch feeds first"
+	[[ ! -f $NEWS_DIR/feed.xml ]] && die -m "Missing feed.xml, fetch feeds first"
 
 	local n=0 t=1
 	declare -a item
@@ -50,9 +45,9 @@ do_list(){
 }
 do_read(){
 	local author link description pubdate fold
-	local item=$1 count
+	local count item=$1
 
-	! [[ -f $NEWS_DIR/feed.xml ]] && die -m "Missing feed.xml, fetch feeds first"
+	[[ ! -f $NEWS_DIR/feed.xml ]] && die -m "Missing feed.xml, fetch feeds first"
 
 	[[ -z $item ]] && die -m "No feed item specified"
 
@@ -85,7 +80,7 @@ do_fetch(){
 	require_tool curl
 
 	emsg "Updating latest news from $NEWS_FEED_URL"
-	! [[ -d $NEWS_DIR ]] && mkdir -p $NEWS_DIR
+	[[ ! -d $NEWS_DIR ]] && mkdir -p $NEWS_DIR
 	curl -sS "$NEWS_FEED_URL" -o "$NEWS_DIR/feed.xml" 2>/dev/null || die -m "Failed to fetch feeds"
 }
 
