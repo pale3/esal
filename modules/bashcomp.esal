@@ -31,13 +31,13 @@ find_targets(){
 is_enabled(){
 	local bcdir
 
-	bcdir=${ROOT%/}/${HOME}/.bash_completion.d
-	if [[ $1 == "--global" ]]; then
-		bcdir=${EROOT%/}/etc/bash_completion.d
-		shift
+	bcdir="${HOME}/.bash_completion.d"
+	if [[ $1 == "--global" ]]; then # check this
+		bcdir="/etc/bash_completion.d"
 	fi
 
-	[[ -e ${bcdir}/$1 ]]
+	[[ -e ${bcdir}/$1 ]] || return 1
+	return 0
 }
 
 do_list(){
@@ -46,16 +46,16 @@ do_list(){
 
 	emsg "Available completions:"
 	for (( i = 0; i < ${#targets[@]}; i++ )); do
-		is_enabled "${targets[i]}"
+		is_enabled ${targets[i]} && targets[i]="${targets[i]} ${B}*${N} "
 		write_numbered_output -h "${targets[i]}" "$i"
 	done
 }
 do_enable(){
 	local bcdir bc mode="" file target targets
 
-	bcdir=${ROOT%/}${HOME}/.bash_completion.d
+	bcdir="${HOME}/.bash_completion.d"
 	if [[ $1 == "--global" ]]; then
-		bcdir=${EROOT%/}/etc/bash_completion.d
+		bcdir="/etc/bash_completion.d"
 		mode="-m 0755"
 		shift
 	fi
@@ -90,16 +90,16 @@ do_enable(){
 		case "${bc}" in
 			# absolute path
 			/*)
-			file=${ROOT%/}/${bc}
+			file=${bc}
 			;;
 			# relative path
 			*/*)
-			file=${ROOT%/}/${PWD}/${bc}
+			file=${PWD}/${bc}
 			;;
 			# no path
 			*)
 			# assume /usr/share/bash-completion
-			file=${EROOT%/}/usr/share/bash-completion/completions/${bc}
+			file=/usr/share/bash-completion/completions/${bc}
 			if [[ ! -f ${file} ]]; then
 				for x in ${ES_BASHCOMP_DIRS}; do # TODO: FIX THIS
 					[[ -f ${x}/${bc} ]] && file=${x}/${bc}
