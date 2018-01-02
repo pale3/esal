@@ -4,12 +4,12 @@ _pkgname=esal
 
 pkgname=esal-git
 pkgrel=1
-pkgdesc="Environment select archhlinux utility" 
-url="https://github.com:pale3/esal.git" 
+pkgdesc="Environment select archhlinux utility"
+url="https://github.com:pale3/esal.git"
 license=('GPL')
 arch=('any')
-depends=('bash' 'findutils') 
-source=(git+https://github.com/pale3/esal.git) 
+depends=('bash' 'findutils', 'xmlstarlet')
+source=(git+https://github.com/pale3/esal.git)
 sha1sums=('SKIP')
 
 pkgver() {
@@ -17,7 +17,7 @@ pkgver() {
 	echo $(git rev-list --count master).$(git rev-parse --short master)
 }
 
-package() { 
+package() {
 	cd ${_pkgname}
 	install -D -m 755 ${_pkgname} "${pkgdir}"/usr/bin/${_pkgname}
 
@@ -26,5 +26,5 @@ package() {
 	cp -r modules "${pkgdir}"/usr/lib/$_pkgname
 
 	mkdir -p "${pkgdir}"/etc/
-	cp esalrc "${pkgdir}"/etc/ 
+	cp esalrc "${pkgdir}"/etc/
 }
