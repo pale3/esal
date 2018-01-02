@@ -1,13 +1,55 @@
-Inspired by gentoo eselect utility
+## ESAL - Environment Select for Archlinux
 
-for now there is no special method for installing. I'll change this when I get a time.
+This tool is insipred by Gentoo eselect util for managinig system wide or local user environment, like PAGER, 
+VI, BASHCOMP and so on..
 
-after installation, there is one more step which you need to take before altering your 
-environment variables.
+Currently supported modules are: 
+```
+bashcomp
+editor
+pager
+fontconfig
+java
+news
+vi
+visual
+```
 
-in /etc/profile at the ned of file add line
-	source /etc/env.conf
-if error occurred while sourcing file or upon rereading /etc/profile, just ignore it, with root permissions and using esal this file will be automatically created and error will disappear.
+### Usage
+E.g to read arhclinux news, first we need to fetch latest news from upstrem:
+```
+$ esal news fetch
+$ esal news read 1
+```
+
+Example of setting vi implementation to vim
+```
+$ esal vi list
+Available vi implementations: 
+ [1] vim
+$ esal vi set 1
+```
+
+For explicit module usage type
+`esal <module> help`
+
+### Instalation:
+
+Use provided `PKGBUILD` within repo
+
+``` 
+$ git clone https://github/pale3/esal
+$ cd esal
+$ makepkg -si
+```
+
+After instalation, there is one more step which you need to take before `esal`
+will be succesfuly installed
+
+```
+$ sudo touch /etc/env.conf
+$ echo "source /etc/env.conf" | sudo tee -a /etc/profile
+```
 
 for testing purpose just clone this repo, 
 edit ES_DATA_PATH="/usr/lib/esal" to your esal main dir
