@@ -4,7 +4,7 @@ _pkgname=esal
 
 pkgname=esal-git
 pkgrel=1
-pkgver=1.0
+pkgver=1.0.r0.g4fd5f66
 pkgdesc="Environment select archhlinux utility"
 url="https://github.com:pale3/esal.git"
 license=('GPL')
@@ -15,7 +15,7 @@ sha1sums=('SKIP')
 
 pkgver() {
 	cd ${_pkgname}
-	echo $(git rev-list --count master).$(git rev-parse --short master)
+	echo $(git describe --long) | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 package() {
