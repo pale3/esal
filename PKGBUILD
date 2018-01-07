@@ -4,11 +4,12 @@ _pkgname=esal
 
 pkgname=esal-git
 pkgrel=1
+pkgver=1.0
 pkgdesc="Environment select archhlinux utility"
 url="https://github.com:pale3/esal.git"
 license=('GPL')
 arch=('any')
-depends=('bash' 'findutils', 'xmlstarlet')
+depends=('bash' 'findutils' 'xmlstarlet')
 source=(git+https://github.com/pale3/esal.git)
 sha1sums=('SKIP')
 
