@@ -24,7 +24,7 @@ clean: uninstall
 
 define DEVENV
 	ES_DATA_PATH=$(PWD) \
-	ES_VERSION=$(shell git describe --long --abbr=6 | sed 's/\([^-]*-g\)/r\1/;s/-/./g')
+	ES_VERSION=$(shell git describe --long --abbr=6 --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g')
 endef
 
 demo:

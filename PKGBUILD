@@ -16,7 +16,7 @@ backup=("etc/esalrc")
 
 pkgver() {
 	cd ${_pkgname}
-    echo $(git describe --long --abbr=6) | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+    echo $(git describe --long --abbr=6 --tags) | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 package() {
