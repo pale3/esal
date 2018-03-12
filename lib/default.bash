@@ -2,7 +2,6 @@
 # used for default actions, for example if action is just esal
 # than use this
 USAGE_HELP="${ES_BINARY} <module name> <module option>"
-ES_VERSION="${ES_BINARY} 1.0"
 
 describe_help(){
 	msg "Display help message"
