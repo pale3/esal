@@ -12,20 +12,14 @@ arch=('any')
 depends=('bash' 'findutils' 'xmlstarlet')
 source=(git+https://github.com/pale3/esal.git)
 sha1sums=('SKIP')
+backup=("etc/esalrc")
 
 pkgver() {
 	cd ${_pkgname}
-	echo $(git describe --long) | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+    echo $(git describe --long --abbr=6) | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 package() {
-	cd ${_pkgname}
-	install -D -m 755 ${_pkgname} "${pkgdir}"/usr/bin/${_pkgname}
-
-	mkdir -p "${pkgdir}"/usr/lib/$_pkgname
-	cp -R lib/*.bash "${pkgdir}"/usr/lib/$_pkgname
-	cp -r modules "${pkgdir}"/usr/lib/$_pkgname
-
-	mkdir -p "${pkgdir}"/etc/
-	cp esalrc "${pkgdir}"/etc/
+    cd ${_pkgname}
+    make DESTDIR="$pkgdir/" install
 }
