@@ -27,6 +27,8 @@ find_targets() {
 		/usr/bin/vile \
 		/usr/bin/gvim \
 		/usr/bin/xvile \
+		/usr/bin/nvim \
+		/usr/bin/neovim \
 		; do
 	if [[ -f "${f}" ]] ; then
 		echo $(basename "${f}" )
